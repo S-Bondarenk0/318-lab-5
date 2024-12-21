@@ -1,0 +1,165 @@
+#include <iostream>
+#include <cmath>
+#include <stdexcept>
+
+// Variant 10: Розрахунок параметрів коричневої області
+bool isPointInBrownArea(double x, double y, double a) {
+    double r = a / 2.0; // Радіус кола
+    double absX = std::abs(x);
+    double absY = std::abs(y);
+
+    bool inSector = (absX <= r && absY <= r && (absX * absX + absY * absY <= r * r));
+    bool inTriangle = (absX <= r && absY <= r && absY <= -absX + r);
+
+    return inSector && !inTriangle;
+}
+
+double calculateBrownArea(double a) {
+    double r = a / 2.0;
+    double sector_area = (M_PI * r * r) / 4.0;
+    double triangle_area = (r * r) / 2.0;
+    return sector_area - triangle_area;
+}
+
+double calculateBrownPerimeter(double a) {
+    double r = a / 2.0;
+    double arc_length = (M_PI * r) / 2.0;
+    double radius = r;
+    double hypotenuse = std::sqrt(2) * r;
+    return arc_length + radius + hypotenuse;
+}
+
+void solveVariant10() {
+    std::cout << "\n// Variant 10: Розрахунок параметрів коричневої області\n";
+    double a;
+    std::cout << "Введіть сторону квадрата a: ";
+    std::cin >> a;
+
+    if (a <= 0) {
+        std::cerr << "Сторона квадрата має бути додатнім числом.\n";
+        return;
+    }
+
+    double brown_area = calculateBrownArea(a);
+    double brown_perimeter = calculateBrownPerimeter(a);
+
+    std::cout << "Площа коричневої області: " << brown_area << " квадратних одиниць.\n";
+    std::cout << "Периметр коричневої області: " << brown_perimeter << " одиниць.\n";
+
+    double x, y;
+    std::cout << "\nВведіть координати точки (x, y): ";
+    std::cin >> x >> y;
+
+    if (isPointInBrownArea(x, y, a)) {
+        std::cout << "Точка (" << x << ", " << y << ") належить коричневій області.\n";
+    } else {
+        std::cout << "Точка (" << x << ", " << y << ") не належить коричневій області.\n";
+    }
+}
+
+// Variant 2: Обчислення виразу
+double calculateSeriesVariant2(double x, int n) {
+    double numerator = 1.0;
+    double denominator = 1.0;
+
+    for (int i = 1; i <= n; i++) {
+        numerator *= (x - std::pow(2, i));
+        denominator *= (x - (std::pow(2, i) - 1));
+    }
+
+    if (denominator != 0) {
+        return numerator / denominator;
+    } else {
+        throw std::invalid_argument("Знаменник дорівнює 0, обчислення неможливе.");
+    }
+}
+
+void solveVariant2() {
+    std::cout << "\n// Variant 2: Обчислення виразу\n";
+    double x;
+    int n;
+
+    std::cout << "Введіть значення x: ";
+    std::cin >> x;
+    std::cout << "Введіть значення n (ціле число): ";
+    std::cin >> n;
+
+    try {
+        double result = calculateSeriesVariant2(x, n);
+        std::cout << "Результат обчислення: " << result << std::endl;
+    } catch (const std::exception &e) {
+        std::cout << "Помилка: " << e.what() << std::endl;
+    }
+}
+
+// Variant 12: Обчислення часткової суми ряду
+unsigned long long factorial(int n) {
+    unsigned long long result = 1;
+    for (int i = 1; i <= n; i++) {
+        result *= i;
+    }
+    return result;
+}
+
+double calculateSeriesVariant12(int terms) {
+    const double E = std::exp(1.0);
+    double sum = 0.0;
+
+    for (int n = 1; n <= terms; n++) {
+        double numerator = factorial(n) * std::pow(E, n);
+        double denominator = std::pow(n, 1.0 / n);
+        sum += numerator / denominator;
+    }
+
+    return sum;
+}
+
+void solveVariant12() {
+    std::cout << "\n// Variant 12: Обчислення часткової суми ряду\n";
+    int terms;
+
+    std::cout << "Введіть кількість членів ряду для обчислення часткової суми: ";
+    std::cin >> terms;
+
+    if (terms <= 0) {
+        std::cout << "Кількість членів повинна бути додатнім числом.\n";
+        return;
+    }
+
+    double result = calculateSeriesVariant12(terms);
+    std::cout << "Часткова сума ряду для " << terms << " членів: " << result << std::endl;
+}
+
+// Головна функція
+int main() {
+    int choice;
+
+    do {
+        std::cout << "\nОберіть задачу для виконання:\n";
+        std::cout << "1. Variant 10: Розрахунок параметрів коричневої області\n";
+        std::cout << "2. Variant 2: Обчислення виразу\n";
+        std::cout << "3. Variant 12: Обчислення часткової суми ряду\n";
+        std::cout << "0. Вийти\n";
+        std::cout << "Ваш вибір: ";
+        std::cin >> choice;
+
+        switch (choice) {
+            case 1:
+                solveVariant10();
+                break;
+            case 2:
+                solveVariant2();
+                break;
+            case 3:
+                solveVariant12();
+                break;
+            case 0:
+                std::cout << "Вихід з програми.\n";
+                break;
+            default:
+                std::cout << "Некоректний вибір. Спробуйте ще раз.\n";
+        }
+    } while (choice != 0);
+
+    return 0;
+}
